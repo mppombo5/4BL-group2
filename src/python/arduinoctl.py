@@ -14,3 +14,8 @@ class ArduinoController:
 
         freq_data = struct.pack('i', freq_int)
         return self.arduino.write(freq_data)
+
+    def close(self):
+        # Simply closes the Serial port connection, probably to used in a SIGINT handler.
+        self.arduino.close()
+        return
