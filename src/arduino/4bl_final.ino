@@ -2,6 +2,8 @@
 String frequency;
 void setup() {
   frequency = "";
+  pinMode(12, OUTPUT);
+  digitalWrite(12, LOW);
   Serial.begin(9600);
 }
 
@@ -10,8 +12,14 @@ void loop() {
   if (Serial.available()) {
     char inByte = Serial.read();
     if (inByte == '\n') {
-      // TODO: write to LEDs using the value of frequency here
-      Serial.print(frequency); // this print is just to make sure communication works
+      // this is just to make sure communication works
+      // TODO: write to LEDs using the value of frequency here instead of these tests
+      if (frequency.charAt(0) == '1') {
+        digitalWrite(12, LOW);
+      } else {
+        digitalWrite(12, HIGH);
+      }
+
       frequency = "";
     } else {
       frequency += inByte;
