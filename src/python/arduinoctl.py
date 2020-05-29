@@ -10,10 +10,12 @@ class ArduinoController:
     def write_freq(self, freq: float) -> int:
         # Arduino's Serial.read returns an integer, so we need to turn the floating point frequency into an integer.
         # We multiply the frequency by 10 and truncate the decimal points.
-        freq_int = int(freq * 10)
+        freq = str(int(freq * 10)) + '\n'
 
-        freq_data = struct.pack('i', freq_int)
-        return self.arduino.write(freq_data)
+        return self.arduino.write(freq.encode('utf-8'))
+
+    def read(self):
+        return self.arduino.read()
 
     def close(self):
         # Simply closes the Serial port connection, probably to used in a SIGINT handler.
