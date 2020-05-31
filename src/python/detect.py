@@ -1,8 +1,41 @@
 import pyaudio
 import numpy as np
-import matplotlib.pyplot as plt
-import os
-import signal
+from arduinoctl import ArduinoController as ac
+
+class Detector:
+
+    def __init__(self, dev_file, baud=9600, chunk_size=4096*4,
+                 rate=44100, max_guitar_freq=500):
+        self.arduino = ac(dev_file, baud=baud)
+        self.chunk = chunk_size
+        self.rate = rate
+        self.max_guitar_freq = max_guitar_freq
+        self.p = pyaudio.PyAudio()
+        self.stream = self.p.open(format=pyaudio.paInt16,channels=1,rate=self.rate,input=True,
+              frames_per_buffer=self.chunk)
+
+    # Reads audio from the computer, then extracts the most prevalent frequency
+    # and writes it to the arduino. Returns that frequency.
+    def sample(self) -> float:
+        data = np.fromstring(self.stream.read(self.chunk), dtype=np.int16)
+        fourier = np.fft.fft(data)
+
+        max_ind = np.argmax(np.abs(fourier[:int(self.max_guitar_freq * self.chunk / self.rate)]))
+        max_freq = max_ind * self.rate / self.chunk
+
+        self.arduino.write_freq(max_freq)
+
+        return max_freq
+
+    def close(self):
+        self.stream.stop_stream()
+        self.stream.close()
+        self.p.terminate()
+        self.arduino.close()
+
+
+### Original code from here down ###
+"""
 
 CHUNK = 4096* 4 # # data points
 RATE = 44100 # (Hz)
@@ -44,3 +77,4 @@ while True:
 # plt.figure()
 # plt.plot(frequencies, np.abs(fourier))
 # plt.xlim(0, 500)
+"""
