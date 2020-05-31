@@ -9,7 +9,7 @@ def main():
     args = parser.parse_args()
 
     serial_port = args.port
-    if not os.path.exists(serial_port) or not os.path.isfile(serial_port):
+    if not os.path.exists(serial_port):
         print("Error: file '{}' does not exist or is not a file.".format(serial_port))
         exit(1)
 
