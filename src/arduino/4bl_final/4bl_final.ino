@@ -7,18 +7,25 @@ void setup() {
   Serial.begin(9600);
 }
 
+
+void triggerLights(float frequency, float target) {
+  // TODO: trigger the lights here according to the frequency and target, change below
+  if (abs(frequency - target) < 10.) {
+    digitalWrite(12, HIGH);
+  } else {
+    digitalWrite(12, LOW);
+  }
+}
+
 void loop() {
 
   if (Serial.available()) {
     char inByte = Serial.read();
     if (inByte == '\n') {
       // this is just to make sure communication works
-      // TODO: write to LEDs using the value of frequency here instead of these tests
-      if (frequency.charAt(0) == '1') {
-        digitalWrite(12, LOW);
-      } else {
-        digitalWrite(12, HIGH);
-      }
+
+      // TODO: change the target frequency below to desired
+      triggerLights(frequency.toInt()/10., 200.5);
 
       frequency = "";
     } else {
