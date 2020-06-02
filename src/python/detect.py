@@ -1,6 +1,7 @@
 import pyaudio
 import numpy as np
 from arduinoctl import ArduinoController as ac
+from scipy.signal import find_peaks
 
 class Detector:
 
@@ -20,7 +21,11 @@ class Detector:
         data = np.fromstring(self.stream.read(self.chunk), dtype=np.int16)
         fourier = np.fft.fft(data)
 
-        max_ind = np.argmax(np.abs(fourier[:int(self.max_guitar_freq * self.chunk / self.rate)]))
+        # max_ind = np.argmax(np.abs(fourier[:int(self.max_guitar_freq * self.chunk / self.rate)]))
+        graph = np.abs(fourier[:int(self.max_guitar_freq * self.chunk / self.rate)])
+        peaks, _ = find_peaks(graph, prominence=.5 * (np.max(graph) - np.min(graph)))
+        # print(peaks)
+        max_ind = peaks[0]
         max_freq = max_ind * self.rate / self.chunk
 
         self.arduino.write_freq(max_freq)
